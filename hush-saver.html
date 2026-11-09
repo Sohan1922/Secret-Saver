@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Secret Saver</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--y:#f4d046;--r:#d8302c;--b:#1d3f94;--bg:#fff;--ink:#3a3a3a;--mute:#6b6b6b;--line:#d9d9d9;--card:#f6f6f6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15150f;--ink:#ecece4;--mute:#a9a99c;--line:#3b3b30;--card:#22221a;--r:#ff6a5f;--b:#7fa0ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15150f;--ink:#ecece4;--mute:#a9a99c;--line:#3b3b30;--card:#22221a;--r:#ff6a5f;--b:#7fa0ff;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--y);z-index:30}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+/* splash */
+#splash{position:fixed;inset:0;background:var(--y);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .35s}
+#splash.out{opacity:0;pointer-events:none}
+.disc{width:150px;height:150px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+#splash b{color:var(--r);font-size:26px;font-weight:700;letter-spacing:.01em}
+/* shell */
+.head{background:var(--y);height:14px}
+.logo{display:flex;justify-content:center;padding:12px 0 10px;border-bottom:2px solid var(--r)}
+main{max-width:520px;margin:0 auto;padding:0 18px 110px}
+.tab{display:none}.tab.on{display:block}
+.hi{color:var(--r);font-size:28px;font-weight:700;text-align:center;margin-top:28px}
+.wel{text-align:center;font-size:18px;margin-top:8px}
+.ttl{text-align:center;font-size:26px;font-weight:500;letter-spacing:.04em;margin:30px 0 18px;text-transform:uppercase}
+.card{background:linear-gradient(135deg,#f0c320,#f8dd6e 55%,#f1c93a);border-radius:16px;padding:22px 20px;box-shadow:0 6px 14px rgba(0,0,0,.22)}
+.bc{background:#fff;border-radius:6px;padding:14px 14px 8px;text-align:center;color:#111}
+.bc svg{width:100%;height:92px;display:block}
+.bc div{font-size:15px;letter-spacing:.08em;margin-top:4px}
+.stamp{color:var(--r);text-align:center;font-weight:500;margin-top:16px;letter-spacing:.03em}
+.demo{font-size:12px;color:var(--mute);text-align:center;margin-top:2px}
+.btn-o{display:block;width:100%;margin-top:16px;padding:14px;background:transparent;color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;font-weight:700;font-size:16px}
+.cent{text-align:center;font-size:17px;color:var(--mute);margin-top:26px;line-height:1.7}
+.fine{font-size:11px;text-align:center;color:var(--ink);margin-top:10px;line-height:1.4}
+.sav{color:var(--r);font-size:26px;font-weight:700;text-align:center;margin:30px 0 20px;line-height:1.15}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tri>div{border:1.5px solid var(--r);border-radius:10px;padding:0 6px 12px;text-align:center;margin-top:46px}
+.tri>div.bl{border-color:var(--b)}
+.ring{width:88px;height:88px;border-radius:50%;border:9px solid var(--r);background:var(--bg);margin:-46px auto 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:.95}
+.bl .ring{border-color:var(--b)}
+.ring small{font-size:12px;font-weight:900}.ring strong{font-size:30px;font-weight:900}
+.tri p{font-size:12px;font-weight:700}
+.help{text-align:center;margin-top:26px;padding-top:22px;border-top:2px dashed var(--line)}
+.help b{color:var(--r);display:block;font-size:16px}
+/* finder */
+.bar{background:var(--y);padding:12px;border-radius:2px}
+.srch{display:flex;gap:0;height:48px}
+.srch button{background:var(--r);color:#fff;border:0;width:52px;display:flex;align-items:center;justify-content:center}
+.srch label{flex:1;display:flex;align-items:center;gap:6px;background:#fff;padding:0 8px;color:#222}
+.srch input{flex:1;min-width:0;border:0;font-size:16px;color:#222;background:transparent;outline-offset:6px}
+.rad{margin-top:10px;display:flex;align-items:center;gap:10px;font-weight:700;color:#222}
+.rad select{background:#eee;border:0;border-radius:14px;padding:6px 12px;color:#222}
+.icons{display:flex;gap:4px;margin-top:6px;background:var(--y);padding:8px}
+.icons button{background:var(--r);border:0;color:#fff;width:48px;height:42px;display:flex;align-items:center;justify-content:center}
+.icons .sp{flex:1}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-top:4px}
+.seg button{background:var(--r);color:#fff;border:2px solid var(--r);padding:11px 2px;font-weight:700;font-size:15px}
+.seg button.on{background:var(--bg);color:var(--r)}
+.map{margin-top:6px;border:1px solid var(--line);border-radius:6px;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:24px;background:
+ linear-gradient(135deg,rgba(120,170,120,.22) 0 20%,transparent 20%),repeating-linear-gradient(60deg,transparent 0 46px,rgba(220,150,130,.35) 46px 50px),var(--card)}
+.map h3{font-size:20px}.map p{color:var(--mute);max-width:30ch}
+.go{display:inline-block;background:var(--r);color:#fff;text-decoration:none;font-weight:700;padding:14px 22px;border-radius:6px}
+/* profile / about */
+.row{display:flex;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.row span:first-child{color:var(--mute)}
+#nm{font:inherit;text-align:right;border:0;background:transparent;color:var(--ink);font-weight:700;width:60%}
+.about p{margin-top:14px;color:var(--mute)}
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));z-index:20}
+nav button{background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;font-weight:700;padding:4px}
+nav button.on{color:var(--r)}
+nav svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+dialog{border:0;border-radius:12px;padding:22px;max-width:360px;width:calc(100% - 36px);background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h3{color:var(--r);margin-bottom:10px}
+dialog ol{padding-left:20px;margin:0 0 16px}dialog li{margin-bottom:8px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#splash{transition:none}}
+</style>
+</head>
+<body>
+<div id="splash" role="presentation">
+  <div class="disc"><svg id="sl" width="86" height="86" viewBox="0 0 64 64" aria-hidden="true"></svg></div>
+  <b>SECRET SAVER</b>
+</div>
+
+<div class="head"></div>
+<div class="logo"><svg id="hl" width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"></svg></div>
+
+<main>
+<section class="tab on" id="t-home">
+  <h1 class="hi">Hi <span id="who">Sohan</span>,</h1>
+  <p class="wel">Welcome to <b>Secret Saver</b></p>
+  <h2 class="ttl">My fuel discount</h2>
+  <div class="card"><div class="bc">
+    <svg id="bars" viewBox="0 0 300 92" preserveAspectRatio="none" role="img" aria-label="Sample barcode, not a real code"></svg>
+    <div>0000 0000 0000 0000</div></div></div>
+  <p class="stamp" id="stamp"></p>
+  <p class="demo">Demo pass. This barcode is a sample and will not scan.</p>
+  <button class="btn-o" id="how">How do I redeem my barcode?</button>
+  <p class="cent">Save 4 cents per litre on fuel at participating stations (do not use your mobile phone on the forecourt).</p>
+  <p class="fine">*Demo terms. Sample offers only, none of these discounts are real.</p>
+  <h2 class="sav">THE SAVINGS ADD<br>UP FOR OUR MEMBERS*</h2>
+  <div class="tri">
+    <div class="bl"><div class="ring"><small>SAVE</small><strong>4<sup style="font-size:12px">c</sup></strong></div><p>Per litre<br>with partner*</p></div>
+    <div><div class="ring"><small>SAVE</small><strong>4<sup style="font-size:12px">c</sup></strong></div><p>Per litre with valid supermarket docket*</p></div>
+    <div><div class="ring"><small>SAVE</small><strong>10<sup style="font-size:12px">c</sup></strong></div><p>Per litre when you spend $20 in store*</p></div>
+  </div>
+  <p class="fine" style="margin-top:22px">*Demo terms. Sample offers only.</p>
+  <div class="help"><b>Need a hand?</b>This is a demo, so there is no support line yet.</div>
+</section>
+
+<section class="tab" id="t-find">
+  <h1 class="ttl" style="margin-top:26px">Fuel finder</h1>
+  <div class="bar">
+    <div class="srch">
+      <button id="loc" aria-label="Use my location"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 21 3l-8 18-2-8z"/></svg></button>
+      <label><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="1.8"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input id="q" type="text" placeholder="Suburb or postcode" aria-label="Search location"><button id="clr" aria-label="Clear" style="background:none;color:#222;width:30px">✕</button></label>
+      <button id="rst" aria-label="Reset"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/></svg></button>
+    </div>
+    <div class="rad"><label for="r">Search radius:</label><select id="r"><option>1km</option><option>2km</option><option selected>5km</option><option>10km</option><option>20km</option></select></div>
+  </div>
+  <div class="icons">
+    <button data-d aria-label="Filter"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h18l-7 9v7l-4-2v-5z"/></svg></button>
+    <button data-d aria-label="Pin"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
+    <button data-d aria-label="List"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h2M10 6h10M4 12h2M10 12h10M4 18h2M10 18h10"/></svg></button>
+    <button data-d aria-label="Directions"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M12 6h8l2 2-2 2h-8M12 13H4l-2 2 2 2h8"/></svg></button>
+    <span class="sp"></span>
+    <button data-d aria-label="Download list"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6zM12 10v7m-3-3 3 3 3-3"/></svg></button>
+  </div>
+  <div class="seg" id="seg"><button class="on">Fuel</button><button>Lubricants</button><button>Truck friendly</button></div>
+  <div class="map">
+    <h3 id="mh">Live fuel prices near you</h3>
+    <p id="mp">The map opens on PetrolSpy, which shows current prices at stations around you.</p>
+    <a class="go" id="ps" href="https://petrolspy.com.au/" target="_blank" rel="noopener noreferrer">Open PetrolSpy map</a>
+  </div>
+</section>
+
+<section class="tab" id="t-prof">
+  <h1 class="ttl" style="margin-top:26px">Profile</h1>
+  <div class="row"><span>Name</span><input id="nm" type="text" value="Sohan" maxlength="30" aria-label="Your name"></div>
+  <div class="row"><span>Membership</span><span>Demo member</span></div>
+  <div class="row"><span>Pass</span><span>Sample barcode</span></div>
+  <div class="row"><span>Offers used</span><span id="used">0</span></div>
+  <button class="btn-o" id="rs">Reset demo</button>
+</section>
+
+<section class="tab about" id="t-about">
+  <h1 class="ttl" style="margin-top:26px">About</h1>
+  <p>Secret Saver shows what a members-only fuel discount app looks like: a pass to show at the counter, a map of stations and a list of offers.</p>
+  <p>It is a demo. The barcode is a sample that will not scan, the offers are examples and nothing here is connected to a fuel retailer.</p>
+  <p>The Fuel Finder opens PetrolSpy for live prices.</p>
+</section>
+</main>
+
+<nav id="nav">
+  <button class="on" data-t="home"><svg viewBox="0 0 34 34"><path d="M5 16 17 5l12 11M9 14v14h16V14M14 28v-8h6v8"/></svg>Home</button>
+  <button data-t="find"><svg viewBox="0 0 34 34"><path d="M4 8l9-3 8 3 9-3v21l-9 3-8-3-9 3zM13 5v21M21 8v21"/></svg>Fuel Finder</button>
+  <button data-t="prof"><svg viewBox="0 0 34 34"><circle cx="17" cy="11" r="5"/><path d="M6 29c0-6 5-9 11-9s11 3 11 9z"/></svg>Profile</button>
+  <button data-t="about"><svg viewBox="0 0 34 34"><rect x="6" y="5" width="22" height="24"/><path d="M17 14v10M17 10v1"/></svg>About</button>
+</nav>
+
+<dialog id="dlg">
+  <h3>How to redeem</h3>
+  <ol><li>Show your pass at the counter before you pay.</li><li>The attendant scans the barcode.</li><li>The discount comes off your fuel.</li></ol>
+  <p style="font-size:13px;color:var(--mute);margin-bottom:14px">Demo steps only. This pass will not scan.</p>
+  <button class="btn-o" style="margin:0" id="cls">Got it</button>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var SHELL='<circle cx="32" cy="32" r="30" fill="#d8302c"/><path d="M32 12c-10 0-17 9-17 21 0 8 7 17 17 19 10-2 17-11 17-19 0-12-7-21-17-21z" fill="#f4d046"/><path d="M32 18v30M24 22l5 25M40 22l-5 25" stroke="#d8302c" stroke-width="2.4" stroke-linecap="round"/>';
+  $("sl").innerHTML=SHELL;$("hl").innerHTML=SHELL;
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+  function stamp(){
+    var d=new Date();
+    $("stamp").textContent=d.toLocaleDateString("en-AU")+", "+d.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true});
+  }
+  stamp();
+  // sample barcode (decorative)
+  (function(){
+    var s=1234567,x=6,out="",on=true;
+    function rnd(){s=(s*1103515245+12345)&0x7fffffff;return s}
+    while(x<294){var w=1+rnd()%3;if(on)out+='<rect x="'+x+'" y="0" width="'+w*1.6+'" height="92" fill="#111"/>';x+=w*1.6+(on?0:0);on=!on}
+    $("bars").innerHTML=out;
+  })();
+  // splash, 1 second
+  setTimeout(function(){$("splash").classList.add("out");stamp()},1000);
+  // name
+  var nm=store("hs-name");if(nm){$("nm").value=nm;$("who").textContent=nm}
+  $("nm").oninput=function(){var v=this.value.trim()||"Sohan";$("who").textContent=v;store("hs-name",v)};
+  // tabs
+  $("nav").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    [].forEach.call(document.querySelectorAll("nav button"),function(x){x.classList.toggle("on",x===b)});
+    [].forEach.call(document.querySelectorAll(".tab"),function(t){t.classList.toggle("on",t.id==="t-"+b.dataset.t)});
+    window.scrollTo(0,0);
+  });
+  // redeem dialog
+  $("how").onclick=function(){$("dlg").showModal?$("dlg").showModal():alert("Show your pass at the counter before you pay.")};
+  $("cls").onclick=function(){$("dlg").close()};
+  // toast
+  var tt;function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on")},1800)}
+  [].forEach.call(document.querySelectorAll("[data-d]"),function(b){b.onclick=function(){toast("Use PetrolSpy for this in the demo")}});
+  $("loc").onclick=function(){window.open("https://petrolspy.com.au/","_blank","noopener")};
+  $("clr").onclick=function(e){e.preventDefault();$("q").value="";$("q").focus()};
+  $("rst").onclick=function(){$("q").value="";$("r").value="5km";toast("Search reset")};
+  // finder tabs
+  var copy=[["Live fuel prices near you","The map opens on PetrolSpy, which shows current prices at stations around you.",true],["Lubricants","Lubricant stockists are not part of this demo.",false],["Truck friendly","Truck-friendly sites are not part of this demo.",false]];
+  $("seg").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    var bs=[].slice.call($("seg").children),i=bs.indexOf(b);
+    bs.forEach(function(x){x.classList.toggle("on",x===b)});
+    $("mh").textContent=copy[i][0];$("mp").textContent=copy[i][1];$("ps").style.display=copy[i][2]?"inline-block":"none";
+  });
+  $("rs").onclick=function(){store("hs-name","Sohan");$("nm").value="Sohan";$("who").textContent="Sohan";toast("Demo reset")};
+})();
+</script>
+</body>
+</html>
